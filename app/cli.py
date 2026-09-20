@@ -2,6 +2,7 @@ import typer
 
 from app.generators import generate_users
 from app.exporters.json_exporter import export_to_json
+from app.exporters.csv_exporter import export_csv
 
 
 app = typer.Typer(
@@ -23,6 +24,14 @@ def users(num_users: int = typer.Argument(..., help="Number of users to generate
         export_to_json(users, file_path)
         print(f"Users exported to {file_path}.")
 
+    elif format == "csv":
+
+        filename = "users.csv"
+
+        export_csv(users, filename)
+
+        print(f"✓ Data saved to {filename}")
+
     elif format == "console":
         for user in users:
             typer.echo(user)   
@@ -30,7 +39,7 @@ def users(num_users: int = typer.Argument(..., help="Number of users to generate
         print(f"Generated {num_users} users.")
 
     else:
-        print(f"Unsupported format: {format}. Please choose 'json' or 'console'.")
+        print(f"Unsupported format: {format}. Please choose 'json', 'csv' or 'console'.")
 
 
 if __name__ == "__main__":

@@ -12,17 +12,24 @@ app = typer.Typer(
 
 @app.command()
 def users(num_users: int = typer.Argument(..., help="Number of users to generate"), 
-          format: str = typer.Option("json", help="Output format")):
+        format: str = typer.Option(
+        "console",
+        "--format",
+        "-f",
+        help="Output format: console, json, or csv"
+         )):
+
     """Generate a specified number of random users."""
 
     print(f"\nGenerating {num_users} users...\n")
 
     users = generate_users(num_users)
 
-    if format == "json":
-        file_path = "users.json"
-        export_to_json(users, file_path)
-        print(f"Users exported to {file_path}.")
+    if format == "console":
+        for user in users:
+            typer.echo(user)
+
+        print(f"Generated {num_users} users.")
 
     elif format == "csv":
 
@@ -32,11 +39,10 @@ def users(num_users: int = typer.Argument(..., help="Number of users to generate
 
         print(f"✓ Data saved to {filename}")
 
-    elif format == "console":
-        for user in users:
-            typer.echo(user)   
-
-        print(f"Generated {num_users} users.")
+    elif format == "json":
+            file_path = "users.json"
+            export_to_json(users, file_path)
+            print(f"Users exported to {file_path}.")
 
     else:
         print(f"Unsupported format: {format}. Please choose 'json', 'csv' or 'console'.")

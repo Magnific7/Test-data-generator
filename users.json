@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Maria Johnston",
+        "email": "angelica47@example.com",
+        "phone": "001-900-627-0440x3315"
+    },
+    {
+        "id": 2,
+        "name": "Hannah Reid",
+        "email": "xclark@example.net",
+        "phone": "380.289.1108"
+    },
+    {
+        "id": 3,
+        "name": "Marie Flowers",
+        "email": "rsawyer@example.org",
+        "phone": "(796)679-4170"
+    },
+    {
+        "id": 4,
+        "name": "Corey Clark",
+        "email": "carrie70@example.org",
+        "phone": "001-361-328-1620"
+    },
+    {
+        "id": 5,
+        "name": "Matthew Harrington",
+        "email": "travishernandez@example.net",
+        "phone": "517-660-1396x3188"
+    },
+    {
+        "id": 6,
+        "name": "Kevin Finley",
+        "email": "richardortiz@example.com",
+        "phone": "+1-909-728-9528x0758"
+    }
+]

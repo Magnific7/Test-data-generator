@@ -1,6 +1,7 @@
 import typer
 
-from app.generators import generate_users, generate_user
+from app.generators import generate_users
+from app.exporters.json_exporter import export_to_json
 
 
 app = typer.Typer(
@@ -9,13 +10,27 @@ app = typer.Typer(
 )
 
 @app.command()
-def users(num_users: int = typer.Argument(..., help="Number of users to generate")):
+def users(num_users: int = typer.Argument(..., help="Number of users to generate"), 
+          format: str = typer.Option("json", help="Output format")):
     """Generate a specified number of random users."""
-    users = generate_users(num_users)
-    for user in users:
-        typer.echo(user)   
 
-    print(f"Generated {num_users} users.")
+    print(f"\nGenerating {num_users} users...\n")
+
+    users = generate_users(num_users)
+
+    if format == "json":
+        file_path = "users.json"
+        export_to_json(users, file_path)
+        print(f"Users exported to {file_path}.")
+
+    elif format == "console":
+        for user in users:
+            typer.echo(user)   
+
+        print(f"Generated {num_users} users.")
+
+    else:
+        print(f"Unsupported format: {format}. Please choose 'json' or 'console'.")
 
 
 if __name__ == "__main__":

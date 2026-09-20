@@ -1,0 +1,18 @@
+[project]
+name = "TestDataGenerator"
+version = "0.1.0"
+description = "CLI tool for generating synthetic test data"
+requires-python = ">=3.11"
+
+dependencies = [
+    "typer",
+    "faker"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+
+[project.scripts]
+testdata = "app.cli:app"

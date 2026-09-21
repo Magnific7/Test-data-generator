@@ -1,15 +1,16 @@
 from faker import Faker
+from app.models.users import User
 
 faker = Faker()
 
-def generate_user(user_id: int) -> dict:
+def generate_user(user_id: int) -> User:
     """Generate a random user with name, email, and phone."""
-    user = {
-        "id": user_id,
-        "name": faker.name(),
-        "email": faker.email(),
-        "phone": faker.phone_number()
-    }
+    user = User(
+    id=user_id,
+    name=faker.name(),
+    email=faker.email(),
+    phone=faker.phone_number(),
+)
     return user
 
 def generate_users(count: int) -> list:

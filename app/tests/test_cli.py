@@ -33,7 +33,7 @@ def test_users_unknown_scenario_exits_with_error():
 
 
 def test_users_csv_export_writes_file(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("app.reporting.OUTPUT_DIR", str(tmp_path))
 
     result = runner.invoke(app, ["users", "3", "--format", "csv"])
 
@@ -42,7 +42,7 @@ def test_users_csv_export_writes_file(tmp_path, monkeypatch):
 
 
 def test_invoices_json_export_writes_file(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("app.reporting.OUTPUT_DIR", str(tmp_path))
 
     result = runner.invoke(app, ["invoices", "3", "--scenario", "valid", "--format", "json"])
 

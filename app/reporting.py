@@ -1,3 +1,5 @@
+import os
+
 from app.exporters.csv_exporter import export_csv
 from app.exporters.json_exporter import export_to_json
 from app.models.invoices import Invoice
@@ -42,13 +44,18 @@ def print_console(outcomes: list[ValidationOutcome], scenario: str) -> None:
     print(f"\n{valid_count} valid, {invalid_count} invalid (scenario: {scenario})")
 
 
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
+
+
 def export_outcomes(outcomes: list[ValidationOutcome], export_format: str, filename_prefix: str) -> str:
     rows = [_enrich(outcome) for outcome in outcomes]
-    filename = f"{filename_prefix}.{export_format}"
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    filepath = os.path.join(OUTPUT_DIR, f"{filename_prefix}.{export_format}")
 
     if export_format == "csv":
-        export_csv(rows, filename)
+        export_csv(rows, filepath)
     else:
-        export_to_json(rows, filename)
+        export_to_json(rows, filepath)
 
-    return filename
+    return filepath

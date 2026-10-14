@@ -91,6 +91,62 @@ Every invoice follows one rule: **amount you actually pay = total − tax − ot
 | `deductions-greater-than-total` | Same idea, but the deductions are what's too large. |
 | `mixed` | A single batch with a random blend of the scenarios above. |
 
+## Running the API
+
+The same data can also be generated over HTTP. Start the API server with:
+
+```bash
+testdata serve
+```
+
+This runs the server at `http://127.0.0.1:8000` and restarts it automatically whenever you
+save a code change. Open `http://127.0.0.1:8000/docs` in your browser for an interactive page
+where you can try every endpoint.
+
+You can change the defaults if needed:
+
+```bash
+testdata serve --port 9000      # use a different port (or -p 9000)
+testdata serve --no-reload      # don't restart on code changes
+testdata serve --host 0.0.0.0   # make it reachable from other devices on your network
+```
+
+To generate users, send a `POST` request to `/users` with how many you want and (optionally)
+which scenario to use:
+
+```bash
+curl -X POST http://127.0.0.1:8000/users \
+  -H 'Content-Type: application/json' \
+  -d '{"count": 5, "scenario": "invalid-email"}'
+```
+
+Invoices work the same way, via `POST /invoices`:
+
+```bash
+curl -X POST http://127.0.0.1:8000/invoices \
+  -H 'Content-Type: application/json' \
+  -d '{"count": 5, "scenario": "tax-greater-than-total"}'
+```
+
+For both endpoints, `count` must be between 1 and 1000, and `scenario` defaults to `valid`
+(see [Supported scenarios](#supported-scenarios) for the full list). An unknown scenario
+returns a `422` error listing the scenarios that are available.
+
+### Mixing scenarios in one batch
+
+To get an exact number of records for each of several scenarios in a single batch, use
+`POST /users/mixed` or `POST /invoices/mixed`:
+
+```bash
+curl -X POST http://127.0.0.1:8000/invoices/mixed \
+  -H 'Content-Type: application/json' \
+  -d '{"scenarios": {"zero-amount": 3, "negative-amount": 3, "tax-greater-than-total": 4}}'
+```
+
+This returns 10 invoices: exactly 3, 3 and 4 of each. Every record includes a `scenario` field
+saying which scenario it came from, so you know what result to expect from it. Each count must
+be at least 1, and the total across all scenarios can be at most 1000.
+
 ## Running the tests
 
 ```bash

@@ -6,5 +6,6 @@ build/
 dist/
 *.egg-info/
 
-*.csv
-*.json
+.claude/
+app/output/*.csv
+app/output/*.json

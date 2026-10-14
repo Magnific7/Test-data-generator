@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from app.api.routes.users import router as users_router
 
 app = FastAPI(
     title="Test Data Generator API",
@@ -8,6 +9,8 @@ app = FastAPI(
 )
 
 client = TestClient(app)
+
+app.include_router(users_router)
 
 
 @app.get("/health")

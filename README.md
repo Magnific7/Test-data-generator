@@ -91,6 +91,38 @@ Every invoice follows one rule: **amount you actually pay = total − tax − ot
 | `deductions-greater-than-total` | Same idea, but the deductions are what's too large. |
 | `mixed` | A single batch with a random blend of the scenarios above. |
 
+## Running the API
+
+The same data can also be generated over HTTP. Start the API server with:
+
+```bash
+testdata serve
+```
+
+This runs the server at `http://127.0.0.1:8000` and restarts it automatically whenever you
+save a code change. Open `http://127.0.0.1:8000/docs` in your browser for an interactive page
+where you can try every endpoint.
+
+You can change the defaults if needed:
+
+```bash
+testdata serve --port 9000      # use a different port (or -p 9000)
+testdata serve --no-reload      # don't restart on code changes
+testdata serve --host 0.0.0.0   # make it reachable from other devices on your network
+```
+
+To generate users, send a `POST` request to `/users` with how many you want and (optionally)
+which scenario to use:
+
+```bash
+curl -X POST http://127.0.0.1:8000/users \
+  -H 'Content-Type: application/json' \
+  -d '{"count": 5, "scenario": "invalid-email"}'
+```
+
+`count` must be between 1 and 1000, and `scenario` defaults to `valid`. An unknown scenario
+returns a `400` error listing the scenarios that are available.
+
 ## Running the tests
 
 ```bash

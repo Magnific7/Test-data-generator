@@ -71,5 +71,18 @@ def invoices(
         raise typer.Exit(code=1)
 
 
+@app.command()
+def serve(
+    host: str = typer.Option("127.0.0.1", "--host", help="Host to bind the API server to"),
+    port: int = typer.Option(8000, "--port", "-p", help="Port to run the API server on"),
+    reload: bool = typer.Option(True, "--reload/--no-reload", help="Auto-reload on code changes"),
+) -> None:
+    """Start the Test Data Generator API server."""
+
+    import uvicorn
+
+    uvicorn.run("app.api.main:app", host=host, port=port, reload=reload)
+
+
 if __name__ == "__main__":
     app()

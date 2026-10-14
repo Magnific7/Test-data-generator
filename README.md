@@ -132,6 +132,21 @@ For both endpoints, `count` must be between 1 and 1000, and `scenario` defaults 
 (see [Supported scenarios](#supported-scenarios) for the full list). An unknown scenario
 returns a `422` error listing the scenarios that are available.
 
+### Mixing scenarios in one batch
+
+To get an exact number of records for each of several scenarios in a single batch, use
+`POST /users/mixed` or `POST /invoices/mixed`:
+
+```bash
+curl -X POST http://127.0.0.1:8000/invoices/mixed \
+  -H 'Content-Type: application/json' \
+  -d '{"scenarios": {"zero-amount": 3, "negative-amount": 3, "tax-greater-than-total": 4}}'
+```
+
+This returns 10 invoices: exactly 3, 3 and 4 of each. Every record includes a `scenario` field
+saying which scenario it came from, so you know what result to expect from it. Each count must
+be at least 1, and the total across all scenarios can be at most 1000.
+
 ## Running the tests
 
 ```bash

@@ -93,3 +93,53 @@ def test_generate_tax_greater_than_total_invoices():
 
     for invoice in response.json()["data"]:
         assert invoice["mandatory_tax"] > invoice["total_amount"]
+
+
+def test_generate_mixed_invoices():
+    response = client.post(
+        "/invoices/mixed",
+        json={
+            "scenarios": {
+                "zero-amount": 3,
+                "negative-amount": 3,
+                "tax-greater-than-total": 4,
+            },
+        },
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+    scenarios = [invoice["scenario"] for invoice in body["data"]]
+
+    assert body["count"] == 10
+    assert scenarios.count("zero-amount") == 3
+    assert scenarios.count("negative-amount") == 3
+    assert scenarios.count("tax-greater-than-total") == 4
+
+
+def test_mixed_invoice_numbers_are_unique():
+    response = client.post(
+        "/invoices/mixed",
+        json={"scenarios": {"valid": 3, "zero-amount": 3}},
+    )
+
+    invoice_numbers = [invoice["invoice_number"] for invoice in response.json()["data"]]
+
+    assert len(invoice_numbers) == len(set(invoice_numbers))
+
+
+@pytest.mark.parametrize(
+    "scenarios",
+    [
+        {},
+        {"valid": 0},
+        {"valid": -1},
+        {"bogus": 2},
+        {"valid": 600, "zero-amount": 401},
+    ],
+)
+def test_invalid_mixed_invoice_request_returns_422(scenarios):
+    response = client.post("/invoices/mixed", json={"scenarios": scenarios})
+
+    assert response.status_code == 422

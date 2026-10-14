@@ -40,3 +40,15 @@ def generate_user_records(count: int, scenario: str = "valid") -> list[dict]:
             record["email"] = shared_email
 
     return records
+
+def generate_mixed_user_records(scenario_counts: dict[str, int]) -> list[dict]:
+    """Generate an exact number of user records per scenario, each tagged with its scenario."""
+    records = []
+    for scenario, count in scenario_counts.items():
+        for record in generate_user_records(count, scenario):
+            records.append({**record, "scenario": scenario})
+
+    for user_id, record in enumerate(records, start=1):
+        record["id"] = user_id
+
+    return records

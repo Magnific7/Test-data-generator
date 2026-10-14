@@ -125,3 +125,53 @@ def test_count_cannot_be_negative():
     )
 
     assert response.status_code == 422
+
+
+def test_generate_mixed_users():
+    response = client.post(
+        "/users/mixed",
+        json={
+            "scenarios": {
+                "valid": 3,
+                "invalid-email": 3,
+                "missing-required-field": 4,
+            },
+        },
+    )
+
+    assert response.status_code == 200
+
+    body = response.json()
+    scenarios = [user["scenario"] for user in body["data"]]
+
+    assert body["count"] == 10
+    assert scenarios.count("valid") == 3
+    assert scenarios.count("invalid-email") == 3
+    assert scenarios.count("missing-required-field") == 4
+
+
+def test_mixed_user_ids_are_unique():
+    response = client.post(
+        "/users/mixed",
+        json={"scenarios": {"valid": 3, "boundary": 3}},
+    )
+
+    ids = [user["id"] for user in response.json()["data"]]
+
+    assert ids == [1, 2, 3, 4, 5, 6]
+
+
+@pytest.mark.parametrize(
+    "scenarios",
+    [
+        {},
+        {"valid": 0},
+        {"valid": -1},
+        {"bogus": 2},
+        {"valid": 600, "boundary": 401},
+    ],
+)
+def test_invalid_mixed_user_request_returns_422(scenarios):
+    response = client.post("/users/mixed", json={"scenarios": scenarios})
+
+    assert response.status_code == 422

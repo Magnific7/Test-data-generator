@@ -1,6 +1,14 @@
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
+
+MAX_RECORDS = 1000
+
+
+def _check_total(scenarios: dict) -> None:
+    total = sum(scenarios.values())
+    if total > MAX_RECORDS:
+        raise ValueError(f"Total count across scenarios must be at most {MAX_RECORDS}, got {total}")
 
 
 class UserScenario(str, Enum):
@@ -16,8 +24,37 @@ class UserScenario(str, Enum):
 
 
 class GenerateUserRequest(BaseModel):
-    count: int = Field(gt=0, le=1000)
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"count": 10, "scenario": "invalid-email"}]}
+    )
+
+    count: int = Field(gt=0, le=MAX_RECORDS)
     scenario: UserScenario = UserScenario.VALID
+
+
+class GenerateMixedUserRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "scenarios": {
+                        "valid": 5,
+                        "invalid-email": 3,
+                        "missing-required-field": 2,
+                        "duplicate-values": 3,
+                        "boundary": 1,
+                    }
+                }
+            ]
+        }
+    )
+
+    scenarios: dict[UserScenario, PositiveInt] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def check_total(self):
+        _check_total(self.scenarios)
+        return self
 
 
 class InvoiceScenario(str, Enum):
@@ -33,5 +70,34 @@ class InvoiceScenario(str, Enum):
 
 
 class GenerateInvoiceRequest(BaseModel):
-    count: int = Field(gt=0, le=1000)
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"count": 10, "scenario": "tax-greater-than-total"}]}
+    )
+
+    count: int = Field(gt=0, le=MAX_RECORDS)
     scenario: InvoiceScenario = InvoiceScenario.VALID
+
+
+class GenerateMixedInvoiceRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "scenarios": {
+                        "valid": 5,
+                        "zero-amount": 3,
+                        "negative-amount": 3,
+                        "tax-greater-than-total": 4,
+                        "deductions-greater-than-total": 2,
+                    }
+                }
+            ]
+        }
+    )
+
+    scenarios: dict[InvoiceScenario, PositiveInt] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def check_total(self):
+        _check_total(self.scenarios)
+        return self

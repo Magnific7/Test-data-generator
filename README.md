@@ -120,7 +120,16 @@ curl -X POST http://127.0.0.1:8000/users \
   -d '{"count": 5, "scenario": "invalid-email"}'
 ```
 
-`count` must be between 1 and 1000, and `scenario` defaults to `valid`. An unknown scenario
+Invoices work the same way, via `POST /invoices`:
+
+```bash
+curl -X POST http://127.0.0.1:8000/invoices \
+  -H 'Content-Type: application/json' \
+  -d '{"count": 5, "scenario": "tax-greater-than-total"}'
+```
+
+For both endpoints, `count` must be between 1 and 1000, and `scenario` defaults to `valid`
+(see [Supported scenarios](#supported-scenarios) for the full list). An unknown scenario
 returns a `422` error listing the scenarios that are available.
 
 ## Running the tests

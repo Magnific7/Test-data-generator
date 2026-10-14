@@ -121,7 +121,7 @@ curl -X POST http://127.0.0.1:8000/users \
 ```
 
 `count` must be between 1 and 1000, and `scenario` defaults to `valid`. An unknown scenario
-returns a `400` error listing the scenarios that are available.
+returns a `422` error listing the scenarios that are available.
 
 ## Running the tests
 

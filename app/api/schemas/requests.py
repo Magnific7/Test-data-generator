@@ -1,8 +1,20 @@
+from enum import Enum
+
 from pydantic import BaseModel, Field
 
-class GenerateDataRequest(BaseModel):
+
+class UserScenario(str, Enum):
     """
-    Request model for generating data.
+    Allowed scenarios for generating users.
     """
-    count: int = Field(gt=0, le=1000, description="The number of data items to generate.")
-    scenario: str = Field('valid', description="The scenario for which to generate data.")
+    VALID = "valid"
+    INVALID_EMAIL = "invalid-email"
+    MISSING_REQUIRED_FIELD = "missing-required-field"
+    DUPLICATE_VALUES = "duplicate-values"
+    BOUNDARY = "boundary"
+    MIXED = "mixed"
+
+
+class GenerateUserRequest(BaseModel):
+    count: int = Field(gt=0, le=1000)
+    scenario: UserScenario = UserScenario.VALID

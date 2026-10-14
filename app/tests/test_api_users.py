@@ -2,6 +2,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api.main import app
+from app.api.schemas.requests import UserScenario
+from app.scenarios.users import USER_SCENARIOS
 
 
 client = TestClient(app)
@@ -38,11 +40,22 @@ def test_scenario_defaults_to_valid():
     assert response.json()["scenario"] == "valid"
 
 
-def test_unknown_scenario_returns_400():
+def test_unknown_scenario_returns_422():
     response = client.post("/users", json={"count": 2, "scenario": "bogus"})
 
-    assert response.status_code == 400
-    assert "Unknown user scenario" in response.json()["detail"]
+    assert response.status_code == 422
+
+
+def test_user_scenario_enum_matches_generator():
+    assert {scenario.value for scenario in UserScenario} == set(USER_SCENARIOS)
+
+
+@pytest.mark.parametrize("scenario", [scenario.value for scenario in UserScenario])
+def test_every_scenario_generates_users(scenario):
+    response = client.post("/users", json={"count": 3, "scenario": scenario})
+
+    assert response.status_code == 200
+    assert response.json()["scenario"] == scenario
 
 
 @pytest.mark.parametrize("count", [0, -1, 1001])
